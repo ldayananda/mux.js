@@ -815,6 +815,64 @@ QUnit.test('ignores CEA708 captions', function() {
   QUnit.equal(captions[2].text, 'WE TRY NOT TO PUT AN ANIMAL DOWN\nIF WE DON\'T HAVE TO.', 'parsed third caption correctly');
 });
 
+QUnit.only('parses out 2 fields correctly', function() {
+  var captions = [];
+  var multiField608Caption1 = new Uint8Array([
+    4, 53, 181, 0, 49, 71, 65, 57, 52, 3, 206, 255, 252, 148, 32, 252, 148, 174, 252, 21, 200, 252, 229, 110, 252, 103, 186, 252, 145, 185, 252, 176, 176, 252, 186, 176, 252, 176, 186, 252, 52, 52, 252, 186, 176, 252, 176, 128, 252, 148, 44, 252, 148, 47, 255, 0
+  ]);
+  var multiField608Caption2 = new Uint8Array([
+    4, 53, 181, 0, 49, 71, 65, 57, 52, 3, 206, 255, 253, 148, 32, 253, 148, 174, 253, 21, 200, 253, 115, 247, 253, 229, 186, 253, 145, 185, 253, 176, 176, 253, 186, 176, 253, 176, 186, 253, 52, 52, 253, 186, 176, 253, 176, 128, 253, 148, 44, 253, 148, 47, 255, 0
+  ]);
+  var multiField608Caption3 = new Uint8Array([
+    4, 53, 181, 0, 49, 71, 65, 57, 52, 3, 206, 255, 252, 148, 32, 252, 148, 174, 252, 16, 196, 252, 229, 110, 252, 103, 186, 252, 145, 185, 252, 176, 176, 252, 186, 176, 252, 176, 186, 252, 52, 181, 252, 186, 176, 252, 176, 128, 252, 148, 44, 252, 148, 47, 255, 0
+  ]);
+  var multiField608Caption4 = new Uint8Array([
+    4, 53, 181, 0, 49, 71, 65, 57, 52, 3, 206, 255, 253, 148, 32, 253, 148, 174, 253, 16, 196, 253, 115, 247, 253, 229, 186, 253, 145, 185, 253, 176, 176, 253, 186, 176, 253, 176, 186, 253, 52, 181, 253, 186, 176, 253, 176, 128, 253, 148, 44, 253, 148, 47, 255, 0
+  ]);
+
+  captionStream.ccStreams_.forEach(function(cc) {
+    cc.on('data', function(caption) {
+      captions.push(caption);
+    });
+  });
+
+  captionStream.push({
+    nalUnitType: 'sei_rbsp',
+    escapedRBSP: multiField608Caption1,
+    data: multiField608Caption1,
+    dts: 3960000,
+    pts: 3966000,
+    trackId: 2
+  });
+  captionStream.push({
+    nalUnitType: 'sei_rbsp',
+    data: multiField608Caption2,
+    escapedRBSP: multiField608Caption2,
+    dts: 3960000,
+    pts: 3966000,
+    trackId: 2
+  });
+  captionStream.push({
+    nalUnitType: 'sei_rbsp',
+    data: multiField608Caption3,
+    escapedRBSP: multiField608Caption3,
+    dts: 4038000,
+    pts: 4053000,
+    trackId: 2
+  });
+  captionStream.push({
+    nalUnitType: 'sei_rbsp',
+    data: multiField608Caption4,
+    escapedRBSP: multiField608Caption4,
+    dts: 4041000,
+    pts: 4047000,
+    trackId: 2
+  });
+
+  captionStream.flush();
+  QUnit.equal(captions.length, 4);
+});
+
 var cea608Stream;
 
 QUnit.module('CEA 608 Stream', {
