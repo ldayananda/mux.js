@@ -815,19 +815,217 @@ QUnit.test('ignores CEA708 captions', function() {
   QUnit.equal(captions[2].text, 'WE TRY NOT TO PUT AN ANIMAL DOWN\nIF WE DON\'T HAVE TO.', 'parsed third caption correctly');
 });
 
-QUnit.only('parses out 2 fields correctly', function() {
+QUnit.test('parses out 2 fields correctly', function() {
   var captions = [];
+  // text is "eng: 00:00:44:00"
   var multiField608Caption1 = new Uint8Array([
-    4, 53, 181, 0, 49, 71, 65, 57, 52, 3, 206, 255, 252, 148, 32, 252, 148, 174, 252, 21, 200, 252, 229, 110, 252, 103, 186, 252, 145, 185, 252, 176, 176, 252, 186, 176, 252, 176, 186, 252, 52, 52, 252, 186, 176, 252, 176, 128, 252, 148, 44, 252, 148, 47, 255, 0
+    4, 53, 181, 0, 49, 71, 65, 57, 52, 3,
+    // count
+    206, 255,
+    // type
+    252,
+    // sets active channel CC1
+    // ccData: 37920, Resume Caption Load
+    148, 32,
+    252,
+    // ccData: 38062, Erase Non-Displayed Memory
+    148, 174,
+    252,
+    // ccData: 5576, Color, non-italized
+    21, 200,
+    252,
+    // ccData: 58734, text "en"
+    229, 110,
+    252,
+    // ccData: 26554, text "g:"
+    103, 186,
+    252,
+    // ccData: 37305, special character space
+    145, 185,
+    252,
+    // ccData: 45232, text "00"
+    176, 176,
+    252,
+    // ccData: 47792, text ":0"
+    186, 176,
+    252,
+    // ccData: 45242, text "0:"
+    176, 186,
+    252,
+    // ccData: 13364, text "44"
+    52, 52,
+    252,
+    // ccData: 47792, text ":0"
+    186, 176,
+    252,
+    // ccData: 45184, text "0"
+    176, 128, // char1 is null
+    252,
+    // ccData: 37932, Erase Displayed Memory
+    148, 44,
+    252,
+    // ccData: 37935, End of Caption
+    148, 47,
+    255, 0
   ]);
+  // text is "swe: 00:00:44:00"
   var multiField608Caption2 = new Uint8Array([
-    4, 53, 181, 0, 49, 71, 65, 57, 52, 3, 206, 255, 253, 148, 32, 253, 148, 174, 253, 21, 200, 253, 115, 247, 253, 229, 186, 253, 145, 185, 253, 176, 176, 253, 186, 176, 253, 176, 186, 253, 52, 52, 253, 186, 176, 253, 176, 128, 253, 148, 44, 253, 148, 47, 255, 0
+    4, 53, 181, 0, 49, 71, 65, 57, 52, 3,
+    // count
+    206, 255,
+    // type
+    253,
+    // sets active channel CC3
+    // ccData: 37920, Resume Caption Load
+    // note: this does not get parsed Cea608Stream.push for some reason
+    148, 32,
+    253,
+    // ccData: 38062, Erase Non-Displayed Memory
+    // note: this does not get parsed Cea608Stream.push for some reason
+    148, 174,
+    253,
+    // ccData: 5576, Color, non-italic
+    21, 200,
+    253,
+    // ccData: 29687, text "sw"
+    115, 247,
+    253,
+    // ccData: 58810, text "e:"
+    229, 186,
+    253,
+    // ccData: 37305, special character space
+    145, 185,
+    253,
+    // ccData: 45232, text "00"
+    176, 176,
+    253,
+    // ccData: 47792, text ":0"
+    186, 176,
+    253,
+    // ccData: 45242, text "0:"
+    176, 186,
+    253,
+    // ccData: 13364, text "44"
+    52, 52,
+    253,
+    // ccData: 47792, text ":0"
+    186, 176,
+    253,
+    // ccData: 45184, text "0"
+    176, 128, // char 1 is null
+    253,
+    // ccData: 37932, Erase Displayed Memory
+    // note: this does not get parsed Cea608Stream.push for some reason
+    148, 44,
+    253,
+    // ccData: 37935, End of Caption
+    // note: this does not get parsed Cea608Stream.push for some reason
+    148, 47,
+    255, 0
   ]);
+  // text is "swe: 00:00:45:00"
   var multiField608Caption3 = new Uint8Array([
-    4, 53, 181, 0, 49, 71, 65, 57, 52, 3, 206, 255, 252, 148, 32, 252, 148, 174, 252, 16, 196, 252, 229, 110, 252, 103, 186, 252, 145, 185, 252, 176, 176, 252, 186, 176, 252, 176, 186, 252, 52, 181, 252, 186, 176, 252, 176, 128, 252, 148, 44, 252, 148, 47, 255, 0
+    4, 53, 181, 0, 49, 71, 65, 57, 52, 3,
+    // count
+    206, 255,
+    // type
+    252,
+    // sets active channel CC1
+    // ccData: 37920, Resume Caption Load
+    148, 32,
+    252,
+    // ccData: 38062, Erase Non-Displayed Memory
+    148, 174,
+    252,
+    // ccData: 4292, Color non-italic
+    16, 196,
+    252,
+    // ccData: 58734, text "en"
+    229, 110,
+    252,
+    // ccData: 26554, text "g:"
+    103, 186,
+    252,
+    // ccData: 37305, special character space
+    145, 185,
+    252,
+    // ccData: 45232, text "00"
+    176, 176,
+    252,
+    // ccData: 47792, text ":0"
+    186, 176,
+    252,
+    // ccData: 45242, text "0:"
+    176, 186,
+    252,
+    // ccData: 13493, text "45"
+    52, 181,
+    252,
+    // ccData: 47792, text ":0"
+    186, 176,
+    252,
+    // ccData: 45184, text "0"
+    176, 128, // char1 is null
+    252,
+    // ccData: 37932, Erase Displayed Memory
+    148, 44,
+    252,
+    // ccData: 37935, End Of Caption
+    148, 47,
+    255, 0
   ]);
+  // text is "eng: 00:00:45:00"
   var multiField608Caption4 = new Uint8Array([
-    4, 53, 181, 0, 49, 71, 65, 57, 52, 3, 206, 255, 253, 148, 32, 253, 148, 174, 253, 16, 196, 253, 115, 247, 253, 229, 186, 253, 145, 185, 253, 176, 176, 253, 186, 176, 253, 176, 186, 253, 52, 181, 253, 186, 176, 253, 176, 128, 253, 148, 44, 253, 148, 47, 255, 0
+    4, 53, 181, 0, 49, 71, 65, 57, 52, 3,
+    206, 255,
+    253,
+    // active channel set to CC3
+    // ccData: 37920, Resume Caption Load
+    // note: this does not get parsed Cea608Stream.push for some reason
+    148, 32,
+    253,
+    // ccData: 38062, Erase Non-Displayed Memory
+    // note: this does not get parsed Cea608Stream.push for some reason
+    148, 174,
+    253,
+    // ccData: 4292, Color non-italic
+    16, 196,
+    253,
+    // ccData: 29687, text "sw"
+    115, 247,
+    253,
+    // ccData: 58810, text "e:"
+    229, 186,
+    253,
+    // ccData: 37305, special character space
+    145, 185,
+    253,
+    // ccData: 45232, text "00"
+    176, 176,
+    253,
+    // ccData: 47792, text ":0"
+    186, 176,
+    253,
+    // ccData: 45242, text "0:"
+    176, 186,
+    253,
+    // ccData: 13493, text "45"
+    52, 181,
+    253,
+    // ccData: 47792, text ":0"
+    186, 176,
+    253,
+    // ccData: 45184, text "0"
+    176, 128, // char1 is null
+    253,
+    // ccData: 37932, Erase Displayed Memory
+    // note: this does not get parsed Cea608Stream.push for some reason
+    148, 44,
+    253,
+    // ccData: 37935, End of Caption
+    // note: this does not get parsed Cea608Stream.push for some reason
+    148, 47,
+    255, 0
   ]);
 
   captionStream.ccStreams_.forEach(function(cc) {
